@@ -31,7 +31,7 @@ router.post('/getagendabyid', checkauth, (req, res) => {
 });
 
 router.post('/getagendalimit', checkauth, (req, res) => {
-  agendaSchema.sequelize.query('select * from agenda order by tanggal_awal desc '" limit '+req.body.limit+'').then((response) => {
+  agendaSchema.sequelize.query('select * from agenda order by tanggal_awal desc " limit '+req.body.limit).then((response) => {
     res.status(200).json(response);
   }).catch((e) => {
     res.status(500).json(e);
