@@ -38,4 +38,17 @@ router.post('/getagendalimit', checkauth, (req, res) => {
   });
 });
 
+router.post('/getlistagenda', checkauth, (req, res) => {
+  agendaSchema.sequelize.query('SELECT * '+
+  'FROM agenda '+
+  'ORDER BY id_agenda DESC LIMIT 3').then((response) => {
+    res.status(200).json({
+      status: 200,
+      rows: response[0],
+  });
+  }).catch((e) => {
+    res.status(500).json(e);
+  });
+});
+
 module.exports = router;
