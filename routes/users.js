@@ -7,6 +7,8 @@
 require('dotenv').config();
 const express = require('express');
 const Joi = require('joi');
+const userSchema = require('../models/user_model');
+const checkauth = require('../middleware/validation');
 
 const { gettoken, register } = require('../lib/gateway');
 
@@ -78,5 +80,29 @@ router.post('/register', async function (req, res) {
       });
     }
   });
+});
+
+router.post('/getuserbyemail', checkauth, (req, res) => {
+  userSchema.findAndCountAll({
+    where: {
+      email: req.body.email,
+    },
+  })
+    .then((data) => {
+      if (data.length < 1) {
+        res.status(404).json({
+          message: 'Not Found',
+        });
+      } else {
+        res.status(200).json(data);
+      }
+      // });x
+    })
+    .catch((err) => {
+      res.status(500).json({
+        error: err,
+        status: 500,
+      });
+    });
 });
 module.exports = router;

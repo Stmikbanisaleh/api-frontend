@@ -20,6 +20,17 @@ router.post('/getkegiatan', checkauth, (req, res) => {
   });
 });
 
+router.post('/getkegiatansispan', checkauth, (req, res) => {
+  kegiatanSchema.sequelize.query('SELECT * FROM kegiatan WHERE id_posisi = 3 ORDER BY id_kegiatan DESC LIMIT 1').then((response) => {
+    res.status(200).json({
+      status: 200,
+      rows: response[0],
+    });
+  }).catch((e) => {
+    res.status(500).json(e);
+  });
+});
+
 router.post('/getkegiatanbyid', checkauth, (req, res) => {
   kegiatanSchema.findAndCountAll({
     where: {

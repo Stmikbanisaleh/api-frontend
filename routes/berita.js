@@ -24,4 +24,20 @@ router.post('/getlistberita', checkauth, (req, res) => {
   });
 });
 
+router.post('/getberitapaging', checkauth, (req, res) => {
+  if(req.body.start){
+    beritaSchema.sequelize.query('select * from berita order by createdAt desc limit '+req.body.start +','+ req.body.limit).then((response) => {
+      res.status(200).json(response[0]);
+    }).catch((e) => {
+      res.status(500).json(e);
+    });
+  }else{
+    beritaSchema.sequelize.query('select * from berita order by createdAt desc limit '+req.body.limit).then((response) => {
+      res.status(200).json(response[0]);
+    }).catch((e) => {
+      res.status(500).json(e);
+    });
+  }
+});
+
 module.exports = router;

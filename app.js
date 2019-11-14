@@ -8,7 +8,6 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const Sequelize = require('sequelize');
 
-
 // eslint-disable-next-line no-unused-vars
 const  halamanModel = require('./models/halaman_model');
 const  userModel = require('./models/user_model');
@@ -23,6 +22,7 @@ const  agendaModel = require('./models/agenda_model');
 const  kegiatanModel = require('./models/kegiatan_model');
 const  beritaModel = require('./models/berita_model');
 const  posisiModel = require('./models/posisi_model');
+const  panduanModel = require('./models/panduan_model');
 
 
 const indexRouter = require('./routes/index');
@@ -40,6 +40,7 @@ const kegiatanRouter = require('./routes/kegiatan');
 const beritaRouter = require('./routes/berita');
 const dashboardRouter = require('./routes/dashboard');
 const getRouter = require('./routes/lib/download');
+const panduanRouter = require('./routes/panduan');
 
 
 const app = express();
@@ -69,7 +70,7 @@ app.use('/kegiatan', kegiatanRouter);
 app.use('/berita', beritaRouter);
 app.use('/dashboard', dashboardRouter);
 app.use('/lib/download', getRouter);
-
+app.use('/panduan', panduanRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

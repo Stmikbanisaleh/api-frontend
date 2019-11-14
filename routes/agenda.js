@@ -30,15 +30,35 @@ router.post('/getagendabyid', checkauth, (req, res) => {
   });
 });
 
-router.post('/getagendalimit', checkauth, (req, res) => {
-  agendaSchema.sequelize.query('select * from agenda order by tanggal_awal desc " limit '+req.body.limit).then((response) => {
-    res.status(200).json(response);
+router.post('/getagendapaging', checkauth, (req, res) => {
+  if(req.body.start){
+    agendaSchema.sequelize.query('select * from agenda order by tanggal_awal desc limit '+req.body.limit +','+ req.body.start).then((response) => {
+      res.status(200).json(response[0]);
+    }).catch((e) => {
+      res.status(500).json(e);
+    });
+  }else{
+    agendaSchema.sequelize.query('select * from agenda order by tanggal_awal desc limit '+req.body.limit).then((response) => {
+      res.status(200).json(response[0]);
+    }).catch((e) => {
+      res.status(500).json(e);
+    });
+  }
+});
+
+router.post('/getlistagenda', checkauth, (req, res) => {
+  agendaSchema.sequelize.query('SELECT * '+
+  'FROM agenda ').then((response) => {
+    res.status(200).json({
+      status: 200,
+      rows: response[0],
+  });
   }).catch((e) => {
     res.status(500).json(e);
   });
 });
 
-router.post('/getlistagenda', checkauth, (req, res) => {
+router.post('/getlistagendalimit3', checkauth, (req, res) => {
   agendaSchema.sequelize.query('SELECT * '+
   'FROM agenda '+
   'ORDER BY id_agenda DESC LIMIT 3').then((response) => {
