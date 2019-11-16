@@ -23,6 +23,7 @@ const  kegiatanModel = require('./models/kegiatan_model');
 const  beritaModel = require('./models/berita_model');
 const  posisiModel = require('./models/posisi_model');
 const  panduanModel = require('./models/panduan_model');
+const  visitormessageModel = require('./models/visitormessage_model');
 
 
 const indexRouter = require('./routes/index');
@@ -41,6 +42,7 @@ const beritaRouter = require('./routes/berita');
 const dashboardRouter = require('./routes/dashboard');
 const getRouter = require('./routes/lib/download');
 const panduanRouter = require('./routes/panduan');
+const visitormessageRouter = require('./routes/visitormessage');
 
 
 const app = express();
@@ -71,6 +73,7 @@ app.use('/berita', beritaRouter);
 app.use('/dashboard', dashboardRouter);
 app.use('/lib/download', getRouter);
 app.use('/panduan', panduanRouter);
+app.use('/visitormessage', visitormessageRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
