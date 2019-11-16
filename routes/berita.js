@@ -24,6 +24,17 @@ router.post('/getlistberita', checkauth, (req, res) => {
   });
 });
 
+router.post('/getberitadetail', checkauth, (req, res) => {
+  beritaSchema.sequelize.query('SELECT * FROM berita WHERE judul_seo = "'+req.body.judul_seo+'"').then((response) => {
+    res.status(200).json({
+      status: 200,
+      rows: response[0],
+  });
+  }).catch((e) => {
+    res.status(500).json(e);
+  });
+});
+
 router.post('/getberitapaging', checkauth, (req, res) => {
   if(req.body.start){
     beritaSchema.sequelize.query('select * from berita order by createdAt desc limit '+req.body.start +','+ req.body.limit).then((response) => {

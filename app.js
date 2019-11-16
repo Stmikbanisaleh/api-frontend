@@ -24,6 +24,8 @@ const  beritaModel = require('./models/berita_model');
 const  posisiModel = require('./models/posisi_model');
 const  panduanModel = require('./models/panduan_model');
 const  visitormessageModel = require('./models/visitormessage_model');
+const  msdesainindustriModel = require('./models/msdesainindustri_model');
+const  ddesainindustriModel = require('./models/ddesainindustri_model');
 
 
 const indexRouter = require('./routes/index');
@@ -43,6 +45,8 @@ const dashboardRouter = require('./routes/dashboard');
 const getRouter = require('./routes/lib/download');
 const panduanRouter = require('./routes/panduan');
 const visitormessageRouter = require('./routes/visitormessage');
+const desainindustriRouter = require('./routes/desainindustri');
+const ddesainindustriRouter = require('./routes/ddesainindustri');
 
 
 const app = express();
@@ -74,6 +78,8 @@ app.use('/dashboard', dashboardRouter);
 app.use('/lib/download', getRouter);
 app.use('/panduan', panduanRouter);
 app.use('/visitormessage', visitormessageRouter);
+app.use('/desainindustri', desainindustriRouter);
+app.use('/ddesainindustri', ddesainindustriRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
