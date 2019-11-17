@@ -1,3 +1,5 @@
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable camelcase */
 require('dotenv').config();
 const express = require('express');
 const Joi = require('joi');
@@ -14,9 +16,9 @@ router.get('/', (req, res) => {
 });
 
 /* GET users listing. */
-router.get('/download/:name', function (req, res, next) {
-  const name = req.params.name
-  const url = `./public/file/${name}`
+router.get('/download/:name', (req, res) => {
+  const { name } = req.params;
+  const url = `./public/file/${name}`;
   res.download(url); // Set disposition and send it.
 });
 
@@ -98,11 +100,10 @@ router.post('/adddownload', checkauth, async (req, res) => {
       error,
     });
   }
-
 });
 
 router.post('/updatedownload', checkauth, (req, res) => {
-  if(req.body.nama_file){
+  if (req.body.nama_file) {
     const date = new Date();
     const name = moment(date).format('hhmmiiss');
     const base64Data = req.body.file_base64;
@@ -114,22 +115,22 @@ router.post('/updatedownload', checkauth, (req, res) => {
 
     const _file = {
       nama_file: name_file,
-    }
+    };
 
     downloadSchema.update(_file, {
       where: {
-        id_download: req.body.id_download
-      }
-    })
+        id_download: req.body.id_download,
+      },
+    });
   }
 
   const payload = {
     judul: req.body.judul,
     tgl_posting: req.body.tgl_posting,
     hits: req.body.hits,
-  }
+  };
 
-  let validate = Joi.object().keys({
+  const validate = Joi.object().keys({
     judul: Joi.string().required(),
     tgl_posting: Joi.date().required(),
     hits: Joi.string().required(),
@@ -137,85 +138,76 @@ router.post('/updatedownload', checkauth, (req, res) => {
   Joi.validate(payload, validate, (error) => {
     downloadSchema.update(payload, {
       where: {
-        id_download: req.body.id_download
-      }
-    }).then((data) => {
+        id_download: req.body.id_download,
+      },
+    }).then(() => {
       res.status(200).json({
-        'status': 200,
-        'message' : 'Update Succesfully'
-      })
-    })
+        status: 200,
+        message: 'Update Succesfully',
+      });
+    });
     if (error) {
       res.status(400).json({
-        'status': 'Required' +error,
-        'messages': error,
-      })
+        status: `Required${error}`,
+        messages: error,
+      });
     }
-  })
-})
+  });
+});
 
 router.post('/deletedownload', checkauth, async (req, res) => {
-  let validate = Joi.object().keys({
+  const validate = Joi.object().keys({
     id_download: Joi.number().required(),
   });
 
   const payload = {
     id_download: req.body.id_download,
-  }
+  };
 
   Joi.validate(payload, validate, (error) => {
     downloadSchema.destroy({
       where: {
         id_download: req.body.id_download,
-      }
+      },
     })
-      .then((data) => {
-          res.status(200).json(
-            {
-              status: 200,
-              message: 'Delete Succesfully'
-            }
-          )
-      })
+      .then(() => {
+        res.status(200).json(
+          {
+            status: 200,
+            message: 'Delete Succesfully',
+          },
+        );
+      });
     if (error) {
       res.status(400).json({
-        'status': 'Required',
-        'messages': error.message,
-      })
+        status: 'Required',
+        messages: error.message,
+      });
     }
   });
-})
+});
 
-router.post('/deletedownload', checkauth, async (req, res) => {
-  let validate = Joi.object().keys({
-    id_download: Joi.number().required(),
+router.post('/jmldownload', (req, res) => {
+  downloadSchema.count().then((response) => {
+    res.status(200).json(response);
+  }).catch((e) => {
+    res.status(500).json(e);
   });
+});
 
-  const payload = {
-    id_download: req.body.id_download,
+router.post('/getdownloadpaging', checkauth, (req, res) => {
+  if (req.body.start) {
+    downloadSchema.sequelize.query(`select * from download order by createdAt desc limit ${req.body.start},${req.body.limit}`).then((response) => {
+      res.status(200).json(response[0]);
+    }).catch((e) => {
+      res.status(500).json(e);
+    });
+  } else {
+    downloadSchema.sequelize.query(`select * from download order by createdAt desc limit ${req.body.limit}`).then((response) => {
+      res.status(200).json(response[0]);
+    }).catch((e) => {
+      res.status(500).json(e);
+    });
   }
-
-  Joi.validate(payload, validate, (error) => {
-    downloadSchema.destroy({
-      where: {
-        id_download: req.body.id_download,
-      }
-    })
-      .then((data) => {
-          res.status(200).json(
-            {
-              status: 200,
-              message: 'Delete Succesfully'
-            }
-          )
-      })
-    if (error) {
-      res.status(400).json({
-        'status': 'Required',
-        'messages': error.message,
-      })
-    }
-  });
-})
-
+});
 module.exports = router;

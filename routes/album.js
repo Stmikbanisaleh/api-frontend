@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+/* eslint-disable no-underscore-dangle */
 const express = require('express');
 const Joi = require('joi');
 const moment = require('moment');
@@ -22,7 +24,7 @@ router.post('/addalbum', checkauth, async (req, res) => {
   fs.writeFileSync(`./public/file/${req.body.gambar}${name}${dot}${type}`, base64Data, 'base64', () => {
   });
 
-  
+
   const payload = Joi.object({
     judul_album: Joi.string().required(),
     album_seo: Joi.string().required(),
@@ -67,7 +69,6 @@ router.post('/addalbum', checkauth, async (req, res) => {
       error,
     });
   }
-
 });
 
 router.post('/getalbum', checkauth, (req, res) => {
@@ -103,7 +104,7 @@ router.post('/getalbumbyid', checkauth, (req, res) => {
 });
 
 router.post('/updatealbum', checkauth, (req, res) => {
-  if(req.body.gambar){
+  if (req.body.gambar) {
     const date = new Date();
     const name = moment(date).format('hhmmiiss');
     const base64Data = req.body.gambar_base64;
@@ -115,13 +116,13 @@ router.post('/updatealbum', checkauth, (req, res) => {
 
     const _file = {
       gambar: name_file,
-    }
+    };
 
     albumSchema.update(_file, {
       where: {
-        id_album: req.body.id_album
-      }
-    })
+        id_album: req.body.id_album,
+      },
+    });
   }
 
   const payload = {
@@ -130,9 +131,9 @@ router.post('/updatealbum', checkauth, (req, res) => {
     keterangan: req.body.keterangan,
     tgl_posting: req.body.tgl_posting,
     username: req.body.username,
-  }
+  };
 
-  let validate = Joi.object().keys({
+  const validate = Joi.object().keys({
     judul_album: Joi.string().required(),
     album_seo: Joi.string().required(),
     keterangan: Joi.string().required(),
@@ -143,53 +144,79 @@ router.post('/updatealbum', checkauth, (req, res) => {
   Joi.validate(payload, validate, (error) => {
     albumSchema.update(payload, {
       where: {
-        id_album: req.body.id_album
-      }
-    }).then((data) => {
+        id_album: req.body.id_album,
+      },
+    }).then(() => {
       res.status(200).json({
-        'status': 200,
-        'message' : 'Update Succesfully'
-      })
-    })
+        status: 200,
+        message: 'Update Succesfully',
+      });
+    });
     if (error) {
       res.status(400).json({
-        'status': 'Required' +error,
-        'messages': error,
-      })
+        status: `Required ${error}`,
+        messages: error,
+      });
     }
-  })
-})
+  });
+});
 
 router.post('/deletealbum', checkauth, async (req, res) => {
-  let validate = Joi.object().keys({
+  const validate = Joi.object().keys({
     id_album: Joi.number().required(),
   });
 
   const payload = {
     id_album: req.body.id_album,
-  }
+  };
 
   Joi.validate(payload, validate, (error) => {
     albumSchema.destroy({
       where: {
         id_album: req.body.id_album,
-      }
+      },
     })
-      .then((data) => {
-          res.status(200).json(
-            {
-              status: 200,
-              message: 'Delete Succesfully'
-            }
-          )
-      })
+      .then(() => {
+        res.status(200).json(
+          {
+            status: 200,
+            message: 'Delete Succesfully',
+          },
+        );
+      });
     if (error) {
       res.status(400).json({
-        'status': 'Required',
-        'messages': error.message,
-      })
+        status: 'Required',
+        messages: error.message,
+      });
     }
   });
-})
+});
 
+router.post('/getgaleripaging', checkauth, (req, res) => {
+  if (req.body.start) {
+    albumSchema.sequelize.query(`select * from album order by createdAt desc limit ${req.body.start},${req.body.limit}`).then((response) => {
+      res.status(200).json(response[0]);
+    }).catch((e) => {
+      res.status(500).json(e);
+    });
+  } else {
+    albumSchema.sequelize.query(`select * from album order by createdAt desc limit ${req.body.limit}`).then((response) => {
+      res.status(200).json(response[0]);
+    }).catch((e) => {
+      res.status(500).json(e);
+    });
+  }
+});
+
+router.post('/getjumlahgaleri', checkauth, (req, res) => {
+  albumSchema.count().then((response) => {
+    res.status(200).json({
+      status: 200,
+      rows: response,
+    });
+  }).catch((e) => {
+    res.status(500).json(e);
+  });
+});
 module.exports = router;

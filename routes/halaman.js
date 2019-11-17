@@ -1,8 +1,6 @@
 /* eslint-disable camelcase */
 const express = require('express');
 const Joi = require('joi');
-const fs = require('fs');
-const moment = require('moment');
 const halamanSchema = require('../models/halaman_model');
 const checkauth = require('../middleware/validation');
 
@@ -38,31 +36,29 @@ router.post('/gethalamanbyid', checkauth, (req, res) => {
 });
 
 router.post('/getisihalaman', checkauth, (req, res) => {
-
   const payload = {
-    seo: req.body.seo
-  }
+    seo: req.body.seo,
+  };
 
-  let validate = Joi.object().keys({
-    seo: Joi.string().required()
+  const validate = Joi.object().keys({
+    seo: Joi.string().required(),
   });
   Joi.validate(payload, validate, (error) => {
-    halamanSchema.sequelize.query('SELECT * FROM halamanstatis '+
-    'WHERE judul_seo = "'+req.body.seo+'"').then((response) => {
+    halamanSchema.sequelize.query(`${'SELECT * FROM halamanstatis '+
+    'WHERE judul_seo = "'}${req.body.seo}"`).then((response) => {
       res.status(200).json({
-        'status': 200,
+        status: 200,
         rows: response[0],
-      })
-    })
+      });
+    });
     if (error) {
       res.status(400).json({
-        'status': 400,
-        'message': '' +error,
+        status: 400,
+        message: `${ error}`,
         // 'messages': error,
-      })
+      });
     }
-  })
-
+  });
 });
 
 module.exports = router;
